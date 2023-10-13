@@ -1,0 +1,7 @@
+.chat-img {
+  background: url("../assets/chat.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 80vh;
+  opacity: 90%;
+}
