@@ -1,13 +1,12 @@
 import React, { useContext, useState } from 'react'
 import { Container, Form, Button, Row, Col, Alert, ProgressBar } from 'react-bootstrap'
 import './Login.css'
-import logoImg from '../assets/chat.jpg'
+import logoImg from '../assets/avatar.png'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { useSignupUserMutation } from '../services/userApi'
 import { MessageContext } from '../Context/MessageContext'
 import { app } from '../Config'
-import { getStorage, ref, uploadBytes, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 
 // Initialize Firebase Storage
 const storage = getStorage(app);
@@ -21,17 +20,17 @@ const SignUp = () => {
     const [previewImg, setPreviewImg] = useState(null)
     const [img, setImg] = useState(null)
     const [uploadProgress, setUploadProgress] = useState(null)
-    // const [imgUploading, setImgUploading] = useState(false)
     const [userInfo, setUserInfo] = useState({ name: '', email: '', password: '', profilePic: '' })
     const [userSignUp, { isLoading, isError, error, isSuccess }] = useSignupUserMutation()
 
     const navigate = useNavigate()
 
 
-    const handleProfilePic = (e) => {
+    const handleProfilePic = async (e) => {
         const file = e.target.files[0]
-        setImg(file) //storing image data
         setPreviewImg(URL.createObjectURL(file)) //set preview image link 
+        await uploadImg(file)
+        setImg(file) //storing image data
     }
 
 
@@ -59,7 +58,6 @@ const SignUp = () => {
                 () => {
                     // Upload completed successfully
                     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                        setUploadProgress(100); // Set progress to 100% when the upload is complete
                         setUserInfo({ ...userInfo, profilePic: downloadURL })
                         resolve(downloadURL);
                     });
@@ -73,12 +71,11 @@ const SignUp = () => {
 
     const handleSignUp = async (e) => {
         e.preventDefault()
-        if (!img) return alert('please upload profile pic')
+        if (!img) return alert('please upload profile picture')
         try {
-            const picture = await uploadImg(img)
 
             // Sign up user
-            userSignUp({ name: userInfo.name, email: userInfo.email, password: userInfo.password, picture }).then(() => {
+            userSignUp({ name: userInfo.name, email: userInfo.email, password: userInfo.password, picture: img }).then(() => {
                 socket.emit('new-user', userInfo.email)
             })
         } catch (error) {
@@ -95,7 +92,7 @@ const SignUp = () => {
 
 
     return (
-        <Container className='' >
+        <Container  >
             <Row className='mt-5'>
                 <Col md={5}>
                     <div className='login-page-img'>
@@ -105,7 +102,7 @@ const SignUp = () => {
                 </Col>
 
                 <Col md={7} className=' border py-3'>
-                    <h1 className='mb-3'>Create Your Account</h1>
+                    <h2 className='mb-5 text-center '>Create New Account</h2>
                     <div className='d-flex justify-content-center mb-3' >
                         <div className='user-image-container '>
                             <img src={previewImg || logoImg} className='user-img'></img>
@@ -144,9 +141,7 @@ const SignUp = () => {
                             <Form.Label>Password</Form.Label>
                             <Form.Control type="password" placeholder="Password" name='password' value={userInfo.password} onChange={(e) => setUserInfo({ ...userInfo, [e.target.name]: e.target.value })} required />
                         </Form.Group>
-                        <Form.Group controlId="formBasicCheckbox" className='mb-3'>
-                            <Form.Check type="checkbox" label="Check me out" />
-                        </Form.Group>
+
                         <div className='d-flex justify-content-between '>
                             <Button variant="primary" type="submit" className='mb-3' >
                                 {isLoading ? 'Signing up...' : 'Submit'}

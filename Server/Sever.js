@@ -39,28 +39,6 @@ const io = require("socket.io")(server, {
   },
 });
 
-const getLastMessagesFromRoom = async (room) => {
-  let roomMessages = await Message.aggregate([
-    { $match: { to: room } },
-    {
-      $group: { _id: "$date", messagesByDate: { $push: "$$ROOT" } },
-    },
-  ]);
-  return roomMessages;
-};
-
-// function sortRoomMessageByDate(messages) {
-//   return messages.sort(function (a, b) {
-//     let date1 = a._id.split("/");
-//     let date2 = b._id.split("/");
-
-//     date1 = date1[0] + date1[1] + date1[2]; // Rearrange the date parts
-//     date2 = date2[0] + date2[1] + date2[2]; // Rearrange the date parts
-
-//     return date1 > date2 ? 1 : -1;
-//   });
-// }
-
 //socket  connection
 io.on("connection", async (socket) => {
   const members = await User.find();
@@ -74,10 +52,9 @@ io.on("connection", async (socket) => {
   });
 
   //joining room
-  socket.on("joinRoom", async (room) => {
+  socket.on("joinRoom", async (room, prevRoom) => {
+    socket.leave(prevRoom);
     socket.join(room);
-    // const newmessage = await getLastMessagesFromRoom(room);
-    // const sortedMessages = await sortRoomMessageByDate(newmessage);
 
     let roomMessages = await Message.find({ to: room })
       .sort({ date: 1, time: 1 })
@@ -90,18 +67,37 @@ io.on("connection", async (socket) => {
     //save new message to DB
     await Message.create({ content, to, by, date, time });
 
-    //find privded room message,sort in ascending order by date & time ,populate 'by' field for sender info
+    //find provided room messages,sort in ascending order by date & time ,populate 'by' field for sender info
     const messages = await Message.find({ to })
       .sort({ date: 1, time: 1 })
       .populate({ path: "by", select: "-password" }) //exclude password
       .exec();
 
     io.to(to).emit("newMessageFromRoom", messages);
+    //send notifications to  all the users about the group msg
+    socket.broadcast.emit("notifications", to);
+  });
+
+  //logOutUser
+  app.delete("/logOut", async (req, res) => {
+    try {
+      const { newMessages, _id } = req.body;
+      const user = await User.findById({ _id });
+      user.status = "offline";
+      user.newMessages = newMessages;
+      await user.save();
+
+      const members = await User.find();
+      socket.broadcast.emit("new-user", members);
+      res.json({ msg: "user logged out" });
+    } catch (e) {
+      console.log(e);
+      res.status(400).send();
+    }
   });
 });
 
 const port = process.env.PRODUCTION_PORT || 5000;
-
 server.listen(port, () => {
   console.log("server has been listening on the port 5000");
 });

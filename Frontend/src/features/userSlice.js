@@ -8,8 +8,16 @@ const userSlice = createSlice({
     status: "idle",
   },
   reducers: {
-    addNotifications: (state, { payload }) => {},
-    resetNotification: (state, { payload }) => {},
+    addNotifications: (state, { payload }) => {
+      if (state.user.newMessages[payload]) {
+        state.user.newMessages[payload] = state.user.newMessages[payload] + 1;
+      } else {
+        state.user.newMessages[payload] = 1;
+      }
+    },
+    resetNotification: (state, { payload }) => {
+      delete state.user.newMessages[payload];
+    },
   },
   extraReducers: (builder) => {
     //save user after sign up
@@ -27,7 +35,10 @@ const userSlice = createSlice({
       }
     );
     //logout:destroy user session
-    builder.addMatcher(userApi.endpoints.logOutUser.matchFulfilled, () => null);
+    builder.addMatcher(userApi.endpoints.logOutUser.matchFulfilled, (state) => {
+      console.log(state);
+      state.user = null;
+    });
   },
 });
 

@@ -6,7 +6,7 @@ import SignUp from "./Pages/SignUp";
 import LandingPage from "./Pages/LandingPage";
 import ChatPage from "./Pages/ChatPage";
 import Protectected from "./Components/Protectected";
-// import "./App.css";
+
 
 function App() {
   return (

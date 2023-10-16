@@ -1,18 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ListGroup, ListGroupItem } from 'react-bootstrap';
+import { ListGroup, ListGroupItem, Row, Col } from 'react-bootstrap';
 import { MessageContext } from '../Context/MessageContext';
 import axios from 'axios';
 import { serverURl } from '../constants';
 import './siderbar.css';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetNotification } from '../features/userSlice';
 
-function SiderBar({ setUserToShow }) {
-    const { setRooms, rooms, members, currentRoom, setCurrentRoom, socket, setMessages, messages } = useContext(MessageContext);
-    const [selectedUser, setSelectedUser] = useState(false)
+function SiderBar({ setUserToShow, setCurrentChat, currentChat, toggleSidebar, isSmallDevice }) {
+    const { setRooms, rooms, members, currentRoom, setCurrentRoom, socket, setMessages } = useContext(MessageContext);
     const { user } = useSelector(state => state.user)
+    const dispatch = useDispatch()
 
-    //filter logged in user to prevent sending messeage to himself
-    const otherMembers = members.filter(member => member._id !== user._id)
+
+
 
     useEffect(() => {
         const fetchRooms = async () => {
@@ -23,17 +24,23 @@ function SiderBar({ setUserToShow }) {
     }, []);
 
 
+
+
     //socket join a room when room get changed
-    const handleRoomChange = (room, index) => {
-        setSelectedUser(index)
+    const handleRoomChange = (room, index, privateRoom) => {
+        setCurrentChat({ ...currentChat, _id: index, name: privateRoom || room })
         setCurrentRoom(room)
-        socket.emit('joinRoom', room)
+        dispatch(resetNotification(room))
+        socket.emit('joinRoom', room, currentRoom)
+
+        if (isSmallDevice) {
+            toggleSidebar()
+        }
     }
 
     //get room messages on joining room
     useEffect(() => {
-        const handleMessageFromRoom = (messages, next) => {
-            console.log(next)
+        const handleMessageFromRoom = (messages) => {
             setMessages(messages)
         }
         socket.on('room-messages', handleMessageFromRoom)
@@ -42,24 +49,41 @@ function SiderBar({ setUserToShow }) {
     }, [currentRoom])
 
 
+    //makes a private room between two users 
+    function getPrivateRoomWithIds(_id1, _id2) {
+        if (_id1 > _id2) {
+            return _id1 + _id2
+        } else {
+            return _id2 + _id1
+        }
+
+    }
+
+
+
 
     return (
         <div className="sidebar">
             <h2 className="sidebar-heading">Available Rooms</h2>
             <ListGroup className="sidebar-list">
                 {rooms.map((room, index) => (
-                    <ListGroup.Item key={index} className={`sidebar-room ${selectedUser === index && 'selected-user'}`} onClick={() => handleRoomChange(room, index)}>
-                        <div>{room}</div>
+                    <ListGroup.Item key={index} className={`sidebar-room p-3 ${currentChat._id === index && 'selected-user'}`} onClick={() => handleRoomChange(room, index)}>
+
+                        <Col sm={10}>{room}</Col>
+                        {user.newMessages[room] && <Col sm={2} > <span className='badge bg-info rounded-circle p-2'> {user.newMessages[room]}</span></Col>}
+
                     </ListGroup.Item>
                 ))}
             </ListGroup>
             <h2 className="sidebar-heading " >Users</h2>
             <ListGroup className="sidebar-list">
-                {otherMembers.map((user, index) => (
-                    <ListGroupItem key={user._d} className={`userListItem ${selectedUser === user._id && 'selected-user'}`} onClick={() => setSelectedUser(user._id)}>
-                        <img src={user?.picture} alt="user-pic" className="user-avatar" onClick={() => setUserToShow(user)} />
-                        <h5 className="user-name">{user.name}</h5>
-                        <div className={`dot ${user.status ? 'online' : 'offline'}`}></div>
+                {members.map((member) => (
+                    <ListGroupItem key={member._id} className={`userListItem ${currentChat._id === member._id && 'selected-user'}`} onClick={() => handleRoomChange(getPrivateRoomWithIds(user._id, member._id), member._id, member.name)} disabled={member._id == user._id} >
+                        <img src={member.picture} alt="user-pic" className="user-avatar" onClick={(e) => { setUserToShow(member); e.stopPropagation() }} />
+                        <h5 className="user-name">{member.name}  {(member._id == user._id) && '(You)'} </h5>
+                        {user.newMessages[getPrivateRoomWithIds(user._id, member._id)] && <Col sm={2} style={{ marginLeft: 'auto' }}> <span className='badge bg-info rounded-circle p-2 '> {user.newMessages[getPrivateRoomWithIds(user._id, member._id)]}</span></Col>}
+
+                        <div className={`dot ${member.status === 'offline' ? 'offline' : 'online'}`}></div>
 
                     </ListGroupItem>
 

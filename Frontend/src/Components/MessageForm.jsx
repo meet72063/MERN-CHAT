@@ -4,15 +4,15 @@ import './Messageform.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import { MessageContext } from '../Context/MessageContext'
-import { useSelector } from 'react-redux'
-import { createRoutesFromElements } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { addNotifications } from '../features/userSlice'
 
-function MessageForm({ setUserToShow }) {
-    const { currentRoom, rooms, socket, messages, setMessages } = useContext(MessageContext)
+function MessageForm({ setUserToShow, currentChat, children }) {
+    const { currentRoom, socket, messages, setMessages } = useContext(MessageContext)
     const { user } = useSelector(state => state.user)
     const [message, setMessage] = useState('')
     const containerRef = useRef(null)
-
+    const dispatch = useDispatch()
 
 
 
@@ -54,32 +54,34 @@ function MessageForm({ setUserToShow }) {
     }, [messages]);
 
 
-    //new message from room 
-    useEffect(() => {
-        const handleNewMessageFromRoom = (payload) => {
-
-            setMessages(payload);
-        };
-        socket.on("newMessageFromRoom", handleNewMessageFromRoom);
-        return () => {
-            socket.off("newMessageFromRoom", handleNewMessageFromRoom);
-        };
-    }, [messages]);
+    //new message from room
+    socket.off("newMessageFromRoom").on("newMessageFromRoom", (payload) => setMessages(payload));
 
 
+
+
+
+    //room notifications
+    socket.off('notifications').on('notifications', (payload) => {
+        currentRoom != payload && dispatch(addNotifications(payload))
+    })
 
 
 
 
     return (
         <>
+
             <div className='message-output' ref={containerRef}>
-                <div className="row justify-content-center mt-3">
-                    <div className="col-auto">
-                        <div className="alert alert-light">
-                            <small className="text-muted">October 13, 2023</small>
-                        </div>
-                    </div>
+
+                <div className="row ">
+
+
+                    <Row className="alert alert-success  ">
+                        <Col xs={2} >{children}</Col>   <Col xs={8} style={{ fontFamily: '-moz-initial', textAlign: 'center' }} > <h5>{currentChat.name || <span>Select a chat </span>}</h5></Col>
+                    </Row>
+
+
                 </div>
                 <ListGroup style={{ paddingBottom: 20 }}>
                     {messages.map((item) => {
@@ -97,16 +99,16 @@ function MessageForm({ setUserToShow }) {
                 </ListGroup>
 
             </div>
-            <Form><Row>
+            <Form className='pb-2'><Row>
 
-                <Col sm={11}>
+                <Col xs={10} md={11} >
                     <Form.Group>
                         <Form.Control type='text' placeholder='Enter you message here' value={message} onChange={e => setMessage(e.target.value)} ></Form.Control>
                     </Form.Group>
 
 
                 </Col>
-                <Col sm={1}>
+                <Col xs={2} md={1} >
                     <Button variant='info' type='submit' onClick={handleSubmit}  >
                         <FontAwesomeIcon icon={faPaperPlane} style={{ color: "#f5f74a", }} />
                     </Button>

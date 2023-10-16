@@ -36,10 +36,11 @@
 }
 
 .sidebar-list {
+  max-height: 50%;
   list-style: none;
   padding: 0;
   flex-grow: 1; /* Allow the list to expand within the sidebar */
-  overflow: auto; /* Add scrollbars when content exceeds the height */
+  overflow-y: auto; /* Add scrollbars when content exceeds the height */
 }
 
 .sidebar-room,

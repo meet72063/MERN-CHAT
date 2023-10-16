@@ -7,7 +7,7 @@ import { MessageContext } from '../Context/MessageContext'
 
 
 const Login = () => {
-    const { socket, newMessage, rooms } = useContext(MessageContext)
+    const { socket } = useContext(MessageContext)
 
 
     const [userInfo, setUserInfo] = useState({ email: '', password: '' })
@@ -27,7 +27,7 @@ const Login = () => {
 
 
     return (
-        <Container className='' >
+        <Container style={{ minHeight: '80vh' }} >
             <Row className='mt-5 '>
 
                 <Col md={7} className=' border py-4 px-3'>
@@ -39,9 +39,7 @@ const Login = () => {
                         <Form.Group className='mb-4' >
                             <Form.Label htmlFor='email'>Email </Form.Label>
                             <Form.Control type="email" id='email' placeholder="Enter email" name='email' value={userInfo.email} onChange={(e) => setUserInfo({ ...userInfo, [e.target.name]: e.target.value })} required />
-                            <Form.Text className="text-muted">
-                                We'll never share your email with anyone else.
-                            </Form.Text>
+
                         </Form.Group>
 
 
@@ -49,9 +47,7 @@ const Login = () => {
                             <Form.Label htmlFor='password'>Password</Form.Label>
                             <Form.Control type="password" id='password' placeholder="Password" name='password' value={userInfo.password} onChange={(e) => setUserInfo({ ...userInfo, [e.target.name]: e.target.value })} required />
                         </Form.Group>
-                        <Form.Group controlId="formBasicCheckbox" className='mb-3'>
-                            <Form.Check type="checkbox" label="Check me out" />
-                        </Form.Group>
+
                         <div className='d-flex justify-content-between '>
                             <Button variant="primary" type="submit" className='mb-3' >
                                 {isLoading ? 'logging in...' : 'Submit'}

@@ -4,6 +4,11 @@ import './carousel.css'
 
 function Example({ userToshow, setUserToShow }) {
 
+    if (!userToshow) {
+        return <></>
+    }
+
+
     return (
         <>
 

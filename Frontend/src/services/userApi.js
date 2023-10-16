@@ -22,10 +22,10 @@ const userApi = createApi({
         body: user,
       }),
     }),
-
+    //logout
     logOutUser: builder.mutation({
       query: (payload) => ({
-        url: "logOut",
+        url: "/logOut",
         method: "DELETE",
         body: payload,
       }),

@@ -11,6 +11,7 @@ const MessageContextProvider = ({ children }) => {
   const [members, setMembers] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [privateRoom, setPrivateRoom] = useState();
   const [currentRoom, setCurrentRoom] = useState("General");
 
   useEffect(() => {
@@ -47,6 +48,8 @@ const MessageContextProvider = ({ children }) => {
         setRooms,
         setNewMessages,
         setCurrentRoom,
+        privateRoom,
+        setPrivateRoom,
       }}
     >
       {children}

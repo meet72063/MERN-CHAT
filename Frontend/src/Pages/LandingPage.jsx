@@ -1,45 +1,26 @@
 import React from 'react'
-import { Button, Col, Row } from 'react-bootstrap'
-import chatImg from '../assets/chat.jpg'
+import { Col, Row, Container } from 'react-bootstrap'
 import './Landing.css'
+import { useNavigate } from 'react-router-dom'
 
-
-const LandingPage = () => {
-
-
+function LandingChatPage() {
+    const navigate = useNavigate()
 
     return (
-        <>
-            <Row className='border rounded  m-2'>
-                <Col md={7} >
-                    <div className='d-flex flex-column  justify-content-center align-items-center p-4  ' style={{ height: '50vh' }}>
-
-                        <div>
-                            <h4 className='my-3 '>
-                                Share Your thought ,laugh,opinions with your friends and families
-                            </h4>
-                            <p>
-                                enjoy real time chat ...
-                            </p>
-                            <Button className='bg-success btn-lg'>
-                                Lets Chat
-                            </Button>
-
+        <div className="landing-chat">
+            <Container>
+                <Row>
+                    <Col md={6}>
+                        <div className="landing-text">
+                            <h1>Welcome to MERN CHAT</h1>
+                            <p>Start chatting with friends and family today!</p>
+                            <button className="btn btn-primary" onClick={() => navigate('/chat')}>Lets Chat</button>
                         </div>
-
-
-
-                    </div>
-
-                </Col>
-                <Col md={5}>
-                    <div className='chat-img'>
-                    </div>
-                </Col>
-            </Row>
-
-        </>
-    )
+                    </Col>
+                </Row>
+            </Container>
+        </div>
+    );
 }
 
-export default LandingPage
+export default LandingChatPage;

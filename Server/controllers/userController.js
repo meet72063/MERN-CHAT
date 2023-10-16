@@ -23,7 +23,14 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findByCredentials(email, password);
-    res.status(200).json({ user });
+    user.status = "online";
+    await user.save();
+
+    const userWithoutPassword = { ...user.toObject() };
+    //delete password property
+    delete userWithoutPassword.password;
+
+    res.status(200).json({ user: userWithoutPassword });
   } catch (error) {
     console.log(error);
     res.status(401).json({ msg: error.message });

@@ -32,9 +32,11 @@
 }
 
 .login-page-img {
-  background: url("../assets/loginImg.jpg");
+  background: url("../assets/chat.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   height: 100%;
   opacity: 90%;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
