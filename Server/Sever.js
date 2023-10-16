@@ -34,7 +34,7 @@ app.get("/rooms", (req, res) => {
 //socket instance
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST"],
   },
 });
