@@ -1,8 +1,7 @@
-import React, { createContext, useEffect,useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { serverURl } from "../constants";
 
-const socket = io(serverURl);
+const socket = io(process.env.REACT_APP_SERVER_URL);
 
 export const MessageContext = createContext();
 

@@ -2,7 +2,6 @@ import React, { useContext, useEffect } from 'react';
 import { ListGroup, ListGroupItem, Col } from 'react-bootstrap';
 import { MessageContext } from '../Context/MessageContext';
 import axios from 'axios';
-import { serverURl } from '../constants';
 import './siderbar.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { resetNotification } from '../features/userSlice';
@@ -17,7 +16,7 @@ function SiderBar({ setUserToShow, setCurrentChat, currentChat, toggleSidebar, i
 
     useEffect(() => {
         const fetchRooms = async () => {
-            const response = await axios.get(serverURl + '/rooms');
+            const response = await axios.get(process.env.REACT_APP_SERVER_URL + '/rooms');
             setRooms(response.data.rooms);
         };
         fetchRooms();
