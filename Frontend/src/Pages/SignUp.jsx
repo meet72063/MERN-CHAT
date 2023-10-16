@@ -23,14 +23,23 @@ const SignUp = () => {
     const [userInfo, setUserInfo] = useState({ name: '', email: '', password: '', profilePic: '' })
     const [userSignUp, { isLoading, isError, error, isSuccess }] = useSignupUserMutation()
 
+
     const navigate = useNavigate()
 
 
     const handleProfilePic = async (e) => {
         const file = e.target.files[0]
         setPreviewImg(URL.createObjectURL(file)) //set preview image link 
-        await uploadImg(file)
-        setImg(file) //storing image data
+        try {
+            const imgUrl = await uploadImg(file)
+            setImg(imgUrl) //storing image data
+
+        } catch (err) {
+            console.log(err)
+            setUploadProgress('upload failed try again!')
+
+        }
+
     }
 
 
@@ -50,7 +59,7 @@ const SignUp = () => {
                     const progress = Math.round(
                         (snapshot.bytesTransferred / snapshot.totalBytes) * 100
                     );
-                    setUploadProgress(progress);
+                    setUploadProgress(`${progress}%`);
                 },
                 (error) => {
                     reject(error)
@@ -59,6 +68,7 @@ const SignUp = () => {
                     // Upload completed successfully
                     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                         setUserInfo({ ...userInfo, profilePic: downloadURL })
+                        setUploadProgress('uploaded')
                         resolve(downloadURL);
                     });
                 }
@@ -105,7 +115,7 @@ const SignUp = () => {
                     <h2 className='mb-5 text-center '>Create New Account</h2>
                     <div className='d-flex justify-content-center mb-3' >
                         <div className='user-image-container '>
-                            <img src={previewImg || logoImg} className='user-img'></img>
+                            <img src={previewImg || logoImg} alt='avatar' className='user-img'></img>
                             <label className='add-image-label' htmlFor='profile-pic'>+</label>
                             <input type="file" accept='image/jpg image/png' hidden id='profile-pic' onChange={handleProfilePic} />
 
@@ -117,7 +127,7 @@ const SignUp = () => {
 
                     </div>
                     {uploadProgress && <div>
-                        <ProgressBar animated now={uploadProgress} striped variant="success" style={{ color: 'red', margin: 3 }} label={`uploading profile pic.... ${uploadProgress}%`} />
+                        <ProgressBar animated now={uploadProgress} striped variant="success" style={{ color: 'red', margin: 3 }} label={` ${uploadProgress}`} />
                     </div>}
 
                     <Form className='p-2' onSubmit={handleSignUp}>

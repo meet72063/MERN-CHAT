@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ListGroup, ListGroupItem, Row, Col } from 'react-bootstrap';
+import React, { useContext, useEffect } from 'react';
+import { ListGroup, ListGroupItem, Col } from 'react-bootstrap';
 import { MessageContext } from '../Context/MessageContext';
 import axios from 'axios';
 import { serverURl } from '../constants';
@@ -78,7 +78,7 @@ function SiderBar({ setUserToShow, setCurrentChat, currentChat, toggleSidebar, i
             <h2 className="sidebar-heading " >Users</h2>
             <ListGroup className="sidebar-list">
                 {members.map((member) => (
-                    <ListGroupItem key={member._id} className={`userListItem ${currentChat._id === member._id && 'selected-user'}`} onClick={() => handleRoomChange(getPrivateRoomWithIds(user._id, member._id), member._id, member.name)} disabled={member._id == user._id} >
+                    <ListGroupItem key={member._id} className={`userListItem ${currentChat._id === member._id && 'selected-user'}`} onClick={() => handleRoomChange(getPrivateRoomWithIds(user._id, member._id), member._id, member.name)} disabled={member._id === user._id} >
                         <img src={member.picture} alt="user-pic" className="user-avatar" onClick={(e) => { setUserToShow(member); e.stopPropagation() }} />
                         <h5 className="user-name">{member.name}  {(member._id == user._id) && '(You)'} </h5>
                         {user.newMessages[getPrivateRoomWithIds(user._id, member._id)] && <Col sm={2} style={{ marginLeft: 'auto' }}> <span className='badge bg-info rounded-circle p-2 '> {user.newMessages[getPrivateRoomWithIds(user._id, member._id)]}</span></Col>}

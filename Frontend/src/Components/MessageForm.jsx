@@ -87,9 +87,9 @@ function MessageForm({ setUserToShow, currentChat, children }) {
                     {messages.map((item) => {
                         return <ListGroupItem
                             key={item?._id}
-                            className={` custom-list-group-item ${item?.by?._id == user?._id ? 'd-flex flex-row-reverse align-items-center  ' : 'd-flex flex-row align-items-center '}`}
+                            className={` custom-list-group-item ${item.by._id === user._id ? 'd-flex flex-row-reverse align-items-center  ' : 'd-flex flex-row align-items-center '}`}
                         >
-                            <img src={item?.by?.picture} alt={item?.by?.name} className='user-avatar' onClick={() => setUserToShow({ name: item.by.name, picture: item.by.picture })} />
+                            <img src={item.by.picture} alt={item.by.name} className='user-avatar' onClick={() => setUserToShow({ name: item.by.name, picture: item.by.picture })} />
                             <div className="message-item">
                                 {item?.content}
                             </div>

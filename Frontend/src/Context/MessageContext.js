@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import React, { createContext, useEffect,useState } from "react";
 import { io } from "socket.io-client";
 import { serverURl } from "../constants";
 
@@ -44,7 +44,6 @@ const MessageContextProvider = ({ children }) => {
         currentRoom,
         setMembers,
         setMessages,
-        setMembers,
         setRooms,
         setNewMessages,
         setCurrentRoom,
