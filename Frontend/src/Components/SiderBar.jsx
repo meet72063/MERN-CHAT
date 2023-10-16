@@ -30,22 +30,16 @@ function SiderBar({ setUserToShow, setCurrentChat, currentChat, toggleSidebar, i
         setCurrentChat({ ...currentChat, _id: index, name: privateRoom || room })
         setCurrentRoom(room)
         dispatch(resetNotification(room))
+        setMessages([])
         socket.emit('joinRoom', room, currentRoom)
-
         if (isSmallDevice) {
             toggleSidebar()
         }
     }
 
-    //get room messages on joining room
-    useEffect(() => {
-        const handleMessageFromRoom = (messages) => {
-            setMessages(messages)
-        }
-        socket.on('room-messages', handleMessageFromRoom)
-        return () => socket.off('room-messages', handleMessageFromRoom)
 
-    }, [currentRoom])
+
+
 
 
     //makes a private room between two users 
@@ -69,7 +63,7 @@ function SiderBar({ setUserToShow, setCurrentChat, currentChat, toggleSidebar, i
                     <ListGroup.Item key={index} className={`sidebar-room p-3 ${currentChat._id === index && 'selected-user'}`} onClick={() => handleRoomChange(room, index)}>
 
                         <Col sm={10}>{room}</Col>
-                        {user.newMessages[room] && <Col sm={2} > <span className='badge bg-info rounded-circle p-2'> {user.newMessages[room]}</span></Col>}
+                        {user.newMessages[room] && <Col sm={2} style={{ marginLeft: 'auto' }} > <span className='badge bg-info rounded-circle p-2'> {user.newMessages[room]}</span></Col>}
 
                     </ListGroup.Item>
                 ))}
@@ -79,8 +73,8 @@ function SiderBar({ setUserToShow, setCurrentChat, currentChat, toggleSidebar, i
                 {members.map((member) => (
                     <ListGroupItem key={member._id} className={`userListItem ${currentChat._id === member._id && 'selected-user'}`} onClick={() => handleRoomChange(getPrivateRoomWithIds(user._id, member._id), member._id, member.name)} disabled={member._id === user._id} >
                         <img src={member.picture} alt="user-pic" className="user-avatar" onClick={(e) => { setUserToShow(member); e.stopPropagation() }} />
-                        <h5 className="user-name">{member.name}  {(member._id == user._id) && '(You)'} </h5>
-                        {user.newMessages[getPrivateRoomWithIds(user._id, member._id)] && <Col sm={2} style={{ marginLeft: 'auto' }}> <span className='badge bg-info rounded-circle p-2 '> {user.newMessages[getPrivateRoomWithIds(user._id, member._id)]}</span></Col>}
+                        <h5 className="user-name ">{member.name}  {(member._id == user._id) && '(You)'} </h5>
+                        {user.newMessages[getPrivateRoomWithIds(user._id, member._id)] && <Col sm={2} style={{ marginLeft: 'auto' }}> <span className='badge bg-info rounded-circle  '> {user.newMessages[getPrivateRoomWithIds(user._id, member._id)]}</span></Col>}
 
                         <div className={`dot ${member.status === 'offline' ? 'offline' : 'online'}`}></div>
 

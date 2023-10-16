@@ -55,16 +55,16 @@ function MessageForm({ setUserToShow, currentChat, children }) {
 
 
     //new message from room
-    socket.off("newMessageFromRoom").on("newMessageFromRoom", (payload) => setMessages(payload));
-
-
-
+    socket.off("newMessageFromRoom").on("newMessageFromRoom", (payload) => { console.log('newMessageFromroom'); setMessages(payload) });
 
 
     //room notifications
     socket.off('notifications').on('notifications', (payload) => {
         currentRoom != payload && dispatch(addNotifications(payload))
     })
+
+
+
 
 
 

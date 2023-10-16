@@ -89,6 +89,7 @@
 .user-name {
   font-family: "cursive";
   color: #666; /* Text color for user names */
+  /* margin-right: 10px; */
 }
 
 .selected-user {

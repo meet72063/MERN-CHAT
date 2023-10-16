@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import SiderBar from '../Components/SiderBar';
 import MessageForm from '../Components/MessageForm';
 import Carousel from '../Components/Carousel';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { MessageContext } from '../Context/MessageContext';
 
 function ChatPage() {
+    const { socket, setMessages } = useContext(MessageContext);
+
     const [userToshow, setUserToShow] = useState(null);
     const [currentChat, setCurrentChat] = useState({});
     const [isSidebarVisible, setSidebarVisible] = useState(true);
@@ -25,6 +28,11 @@ function ChatPage() {
         navigate('/login')
         return
     }
+
+    socket.off('room-messages').on('room-messages', (messages) => setMessages(messages))
+
+
+
 
 
 

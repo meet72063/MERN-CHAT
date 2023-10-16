@@ -117,7 +117,7 @@ const SignUp = () => {
                         <div className='user-image-container '>
                             <img src={previewImg || logoImg} alt='avatar' className='user-img'></img>
                             <label className='add-image-label' htmlFor='profile-pic'>+</label>
-                            <input type="file" accept='image/jpg image/png' hidden id='profile-pic' onChange={handleProfilePic} />
+                            <input type="file" hidden id='profile-pic' onChange={handleProfilePic} />
 
 
                         </div>
